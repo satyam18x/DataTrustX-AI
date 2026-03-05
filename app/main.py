@@ -1,4 +1,12 @@
 from fastapi import FastAPI
+
+app = FastAPI()
+
+@app.get("/")
+def root():
+    return {"message": "Server running"}
+    
+"""from fastapi import FastAPI
 from app.api import validate
 from app.api import auth
 from app.core.database import engine
@@ -90,4 +98,4 @@ app.include_router(admin.router, prefix="/admin", tags=["Admin"])
 
 
 # uvicorn app.main:app --host 127.0.0.1 --port 8000
-# uvicorn app.main:app --reload
+# uvicorn app.main:app --reload"""

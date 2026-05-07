@@ -1,0 +1,112 @@
+@import "tailwindcss";
+
+@theme {
+    /* Premium SaaS Color Palette */
+    --color-brand-50: #f0f5ff;
+    --color-brand-100: #e0eaff;
+    --color-brand-200: #c7d8ff;
+    --color-brand-300: #a3bdff;
+    --color-brand-400: #7a97ff;
+    --color-brand-500: #1247F6; /* High-Energy Blue */
+    --color-brand-600: #0036d9;
+    --color-brand-700: #002bb3;
+    --color-brand-800: #00218c;
+    --color-brand-900: #001a70;
+    --color-brand-950: #000d3d;
+
+    /* Audit & Veracity Green */
+    --color-audit-50: #f1fcf4;
+    --color-audit-500: #1db954;
+    --color-audit-600: #1aa64b;
+    --color-audit-900: #0a2918;
+
+    /* Neutrals */
+    --color-slate-50: #f7f7f5;
+    --color-slate-100: #e8e8e5;
+    --color-slate-200: #d1d1cc;
+    --color-slate-500: #6b6b6b;
+    --color-slate-900: #0d0d0d;
+
+    /* Typography */
+    --font-sans: 'Outfit', system-ui, -apple-system, sans-serif;
+    --font-display: 'Syne', sans-serif;
+    --tracking-tightest: -0.04em;
+    --tracking-tighter: -0.02em;
+
+    /* Advanced Shadows */
+    --shadow-premium: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
+    --shadow-soft-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.05), 0 8px 10px -6px rgba(0, 0, 0, 0.03);
+    --shadow-glow: 0 0 20px -5px rgba(18, 71, 246, 0.3);
+
+    /* Animation Utilities */
+    --animate-float: float 6s ease-in-out infinite;
+    --animate-pulse-slow: pulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+    --animate-spin-slow: spin 12s linear infinite;
+    --animate-shimmer: shimmer 2s linear infinite;
+}
+
+@layer base {
+    body {
+        @apply bg-white text-slate-900 antialiased selection:bg-brand-100 selection:text-brand-900;
+        font-feature-settings: "cv02", "cv03", "cv04", "cv11";
+    }
+
+    h1, h2, h3, h4, h5, h6 {
+        @apply font-display tracking-tightest leading-tight;
+    }
+}
+
+@layer components {
+    .glass-panel {
+        @apply bg-white/70 backdrop-blur-md border border-slate-100 shadow-premium;
+    }
+
+    .glass-card {
+        @apply bg-white border border-slate-100 shadow-soft-xl rounded-[2.5rem];
+    }
+
+    .btn-glow {
+        @apply relative overflow-hidden transition-all duration-300 hover:shadow-glow active:scale-95;
+    }
+
+    .input-premium {
+        @apply w-full h-14 px-6 rounded-2xl bg-slate-50 border border-slate-100 focus:border-brand-500 focus:ring-4 focus:ring-brand-500/10 transition-all outline-none font-medium text-[15px];
+    }
+
+    .badge-premium {
+        @apply inline-flex items-center px-3 py-1 rounded-lg text-[10px] font-black uppercase tracking-widest;
+    }
+
+    /* Professional Bento Grid Utils */
+    .bento-grid {
+        @apply grid gap-6 md:gap-8;
+    }
+
+    .bento-card {
+        @apply bg-white border border-slate-100 rounded-[2rem] p-8 lg:p-10 transition-all duration-500 hover:shadow-soft-xl;
+    }
+}
+
+/* Keyframes */
+@keyframes float {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-20px); }
+}
+
+@keyframes shimmer {
+    0% { background-position: -200% 0; }
+    100% { background-position: 200% 0; }
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+    width: 10px;
+}
+
+::-webkit-scrollbar-track {
+    @apply bg-slate-50;
+}
+
+::-webkit-scrollbar-thumb {
+    @apply bg-slate-200 rounded-full border-4 border-slate-50 hover:bg-slate-300 transition-colors;
+}

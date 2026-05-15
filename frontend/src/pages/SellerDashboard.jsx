@@ -2,7 +2,7 @@ import React, { useState, useEffect, useContext } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
     Plus, Search, Filter, Database, TrendingUp, Activity, 
-    DollarSign, Clock, ShieldCheck, ChevronRight, ArrowUpRight,
+    IndianRupee, Clock, ShieldCheck, ChevronRight, ArrowUpRight,
     BarChart3, Layers, Cpu, Lock, Download, Zap, Globe
 } from 'lucide-react';
 import { AuthContext } from '../context/AuthContext';
@@ -129,7 +129,7 @@ const SellerDashboard = () => {
     };
 
     const stats = [
-        { label: "Total Revenue", value: `$${statsData?.total_revenue || 0}`, icon: DollarSign, color: "text-audit-500", bg: "bg-audit-50" },
+        { label: "Total Revenue", value: `₹${statsData?.total_revenue || 0}`, icon: IndianRupee, color: "text-audit-500", bg: "bg-audit-50" },
         { label: "Market Requests", value: marketRequests.length.toString().padStart(2, '0'), icon: Activity, color: "text-brand-500", bg: "bg-brand-50" },
         { label: "Node Veracity", value: "98.5%", icon: ShieldCheck, color: "text-audit-500", bg: "bg-audit-50" },
         { label: "Active Handshakes", value: activeDeals.filter(d => d.delivery_status !== 'confirmed').length.toString().padStart(2, '0'), icon: Layers, color: "text-brand-500", bg: "bg-brand-50" }
@@ -200,7 +200,7 @@ const SellerDashboard = () => {
                                                 </div>
                                                 <h3 className="text-xl font-display font-bold text-slate-900 tracking-tightest">Deal with @{deal.buyer_username}</h3>
                                                 <div className="flex items-center justify-between pt-4 border-t border-slate-200/60">
-                                                    <p className="text-lg font-display font-bold text-slate-900">${deal.price}</p>
+                                                    <p className="text-lg font-display font-bold text-slate-900">₹{deal.price}</p>
                                                     <Button variant="glow" onClick={() => { setSelectedDeal(deal); setShowDeliveryModal(true); }} className="rounded-xl px-5 h-10 text-sm">
                                                         Deliver Asset <Download className="ml-2 w-3 h-3 rotate-180" />
                                                     </Button>
@@ -236,7 +236,7 @@ const SellerDashboard = () => {
                                     {marketRequests.map((request, idx) => (
                                         <tr key={request.id} className="hover:bg-white transition-colors">
                                             <td className="px-8 py-6 font-bold text-slate-900">{request.title}</td>
-                                            <td className="px-8 py-6 font-display font-bold text-slate-900 text-xl">${request.budget}</td>
+                                            <td className="px-8 py-6 font-display font-bold text-slate-900 text-xl">₹{request.budget}</td>
                                             <td className="px-8 py-6 text-right">
                                                 <button onClick={() => openOfferModal(request)} className="p-3 bg-brand-600 text-white rounded-xl hover:bg-brand-700 transition-all">
                                                     <Plus size={18} strokeWidth={2.5} />
@@ -282,7 +282,7 @@ const SellerDashboard = () => {
                                                     </div>
                                                 </div>
                                             </td>
-                                            <td className="px-8 py-6 font-display font-bold text-slate-900 text-xl">${dataset.price}</td>
+                                            <td className="px-8 py-6 font-display font-bold text-slate-900 text-xl">₹{dataset.price}</td>
                                             <td className="px-8 py-6 text-right">
                                                 <button className="p-3 bg-white border border-slate-200 rounded-xl hover:border-brand-500 transition-all">
                                                     <ArrowUpRight size={18} strokeWidth={2.5} />
@@ -308,7 +308,7 @@ const SellerDashboard = () => {
                             <form onSubmit={handleUpload} className="space-y-8">
                                 <Input label="Node Title" required value={newDataset.title} onChange={(e) => setNewDataset({...newDataset, title: e.target.value})} />
                                 <textarea className="w-full h-32 p-6 rounded-2xl bg-slate-50 border border-slate-100 outline-none" placeholder="Description..." required value={newDataset.description} onChange={(e) => setNewDataset({...newDataset, description: e.target.value})}></textarea>
-                                <Input label="Asset Value (USD)" type="number" required value={newDataset.price} onChange={(e) => setNewDataset({...newDataset, price: e.target.value})} />
+                                <Input label="Asset Value (INR)" type="number" required value={newDataset.price} onChange={(e) => setNewDataset({...newDataset, price: e.target.value})} />
                                 <div className="flex gap-4">
                                     <Button type="button" variant="secondary" className="flex-1 h-14" onClick={() => setShowUploadModal(false)}>Abort</Button>
                                     <Button type="submit" variant="glow" className="flex-[2] h-14">Transmit to Grid</Button>
@@ -326,7 +326,7 @@ const SellerDashboard = () => {
                         <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0.95 }} className="relative w-full max-w-xl bg-white rounded-[3rem] p-10 sm:p-14 space-y-10">
                             <h2 className="text-3xl font-display font-bold text-slate-900">Submit Offer</h2>
                             <form onSubmit={handleCreateOffer} className="space-y-6">
-                                <Input label="Your Price (USD)" type="number" required value={offerForm.price} onChange={e => setOfferForm({...offerForm, price: e.target.value})} />
+                                <Input label="Your Price (INR)" type="number" required value={offerForm.price} onChange={e => setOfferForm({...offerForm, price: e.target.value})} />
                                 <textarea required rows={4} placeholder="Message..." value={offerForm.message} onChange={e => setOfferForm({...offerForm, message: e.target.value})} className="w-full p-4 rounded-2xl bg-slate-50 border outline-none resize-none"></textarea>
                                 <div className="flex gap-4">
                                     <button type="button" onClick={() => setShowOfferModal(false)} className="flex-1 h-14 rounded-2xl border font-bold">Abort</button>

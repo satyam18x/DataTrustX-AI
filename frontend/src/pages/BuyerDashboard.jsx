@@ -18,7 +18,7 @@ import {
     ArrowUpRight,
     Layers,
     BarChart3,
-    DollarSign
+    IndianRupee
 } from 'lucide-react';
 import { AuthContext } from '../context/AuthContext';
 import marketplaceService from '../services/marketplace';
@@ -128,7 +128,7 @@ const BuyerDashboard = () => {
     const stats = [
         { label: "Active Assets", value: statsData?.completed_assets.toString().padStart(2, '0') || "00", icon: Lock, color: "text-brand-500", bg: "bg-brand-50" },
         { label: "Incoming Offers", value: statsData?.verified_offers.toString().padStart(2, '0') || "00", icon: Activity, color: "text-audit-500", bg: "bg-audit-50" },
-        { label: "Capital Deployed", value: `$${statsData?.capital_deployed || 0}`, icon: DollarSign, color: "text-brand-500", bg: "bg-brand-50" },
+        { label: "Capital Deployed", value: `₹${statsData?.capital_deployed || 0}`, icon: IndianRupee, color: "text-brand-500", bg: "bg-brand-50" },
         { label: "Requirements", value: statsData?.pending_requirements.toString().padStart(2, '0') || "00", icon: Database, color: "text-audit-500", bg: "bg-audit-50" }
     ];
 
@@ -223,7 +223,7 @@ const BuyerDashboard = () => {
                                                 <div className="flex items-center justify-between pt-4 border-t border-slate-200/60">
                                                     <div>
                                                         <p className="text-[10px] font-black uppercase tracking-widest text-slate-400 mb-1">Target Budget</p>
-                                                        <p className="text-lg font-display font-bold text-slate-900">${request.budget}</p>
+                                                        <p className="text-lg font-display font-bold text-slate-900">₹{request.budget}</p>
                                                     </div>
                                                     <Button 
                                                         variant="glow"
@@ -303,7 +303,7 @@ const BuyerDashboard = () => {
                                                     <div>
                                                         <p className="text-[10px] font-black uppercase tracking-widest text-slate-400 mb-1">Acquisition Cost</p>
                                                         <p className="text-2xl font-display font-bold text-slate-900 tracking-tightest">
-                                                            ${dataset.price} <span className="text-sm font-sans text-slate-400 uppercase">USD</span>
+                                                            ₹{dataset.price} <span className="text-sm font-sans text-slate-400 uppercase">INR</span>
                                                         </p>
                                                     </div>
                                                     <Button 
@@ -406,10 +406,10 @@ const BuyerDashboard = () => {
                                         </div>
                                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
                                             <Input 
-                                                label="Acquisition Budget (USD)" 
+                                                label="Acquisition Budget (INR)" 
                                                 type="number"
                                                 placeholder="1000.00"
-                                                icon={DollarSign}
+                                                icon={IndianRupee}
                                                 required
                                                 value={newRequest.budget}
                                                 onChange={(e) => setNewRequest({...newRequest, budget: e.target.value})}
@@ -495,7 +495,7 @@ const BuyerDashboard = () => {
                                                         <div className="flex items-center gap-8">
                                                             <div className="text-right">
                                                                 <p className="text-[10px] font-black uppercase tracking-widest text-slate-400 mb-1">Proposal Price</p>
-                                                                <p className="text-3xl font-display font-bold text-slate-900 tracking-tightest">${offer.price}</p>
+                                                                <p className="text-3xl font-display font-bold text-slate-900 tracking-tightest">₹{offer.price}</p>
                                                             </div>
                                                             <Button variant="glow" onClick={() => handleAcceptOffer(offer.offer_id)} className="rounded-2xl px-8 h-14 font-bold">Accept Offer</Button>
                                                         </div>

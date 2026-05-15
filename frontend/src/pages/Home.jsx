@@ -128,7 +128,7 @@ const Home = () => {
                                     <p className="text-[9px] font-black uppercase tracking-widest text-slate-400 mt-1">Audit Latency</p>
                                 </div>
                                 <div>
-                                    <p className="text-2xl lg:text-3xl font-display font-bold text-slate-900 tracking-tightest">$42M+</p>
+                                    <p className="text-2xl lg:text-3xl font-display font-bold text-slate-900 tracking-tightest">₹42M+</p>
                                     <p className="text-[9px] font-black uppercase tracking-widest text-slate-400 mt-1">Escrow Volume</p>
                                 </div>
                             </motion.div>

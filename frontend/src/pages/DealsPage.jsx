@@ -232,7 +232,7 @@ const DealsPage = () => {
                                                     <div>
                                                         <p className="text-[10px] font-black uppercase tracking-widest text-slate-400 mb-1">Settlement</p>
                                                         <p className="text-2xl font-display font-bold text-slate-900 tracking-tightest">
-                                                            ${deal.price}
+                                                            ₹{deal.price}
                                                         </p>
                                                     </div>
                                                     

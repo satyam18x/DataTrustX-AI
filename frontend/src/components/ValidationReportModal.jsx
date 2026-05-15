@@ -35,9 +35,9 @@ import Badge from './ui/Badge';
 
 /* ─── Colour helpers ─────────────────────────────────────── */
 const scoreColor = (s) => {
-  if (s >= 85) return { bar: '#10b981', text: '#065f46', bg: '#ecfdf5', label: '#065f46' };
-  if (s >= 70) return { bar: '#f59e0b', text: '#92400e', bg: '#fffbeb', label: '#92400e' };
-  return { bar: '#ef4444', text: '#991b1b', bg: '#fef2f2', label: '#991b1b' };
+  if (s >= 85) return { bar: '#000000', text: '#000000', bg: '#ffffff', label: '#000000', accent: '#10b981' };
+  if (s >= 70) return { bar: '#000000', text: '#000000', bg: '#ffffff', label: '#000000', accent: '#f59e0b' };
+  return { bar: '#000000', text: '#000000', bg: '#ffffff', label: '#000000', accent: '#ef4444' };
 };
 
 const MODULE_PALETTE = [
@@ -49,9 +49,9 @@ const MODULE_PALETTE = [
 
 function StatTile({ label, value, accent }) {
   return (
-    <div className="bg-slate-50 rounded-2xl p-4 border border-slate-100">
-      <p className="text-[10px] font-black uppercase tracking-widest text-slate-400 mb-1">{label}</p>
-      <p className="text-xl font-bold text-slate-900" style={{ color: accent }}>{value}</p>
+    <div className="bg-black rounded-xl p-4 border border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
+      <p className="text-xs font-black uppercase tracking-widest text-white/60 mb-1 font-mono">{label}</p>
+      <p className="text-3xl font-bold text-white font-mono" style={{ color: accent }}>{value}</p>
     </div>
   );
 }
@@ -76,8 +76,8 @@ function ProgressRow({ label, score }) {
 
 function SectionTitle({ icon: Icon, children }) {
   return (
-    <p className="text-xs font-black uppercase tracking-widest text-slate-400 flex items-center gap-2 mb-4">
-      {Icon && <Icon size={14} className="text-brand-600" />}
+    <p className="text-xs font-black uppercase tracking-[0.2em] text-black flex items-center gap-2 mb-6 border-b-2 border-black pb-2 w-fit">
+      {Icon && <Icon size={16} className="text-black" />}
       {children}
     </p>
   );
@@ -85,7 +85,7 @@ function SectionTitle({ icon: Icon, children }) {
 
 function Card({ children, className = "" }) {
   return (
-    <div className={`bg-white border border-slate-200 rounded-3xl p-6 ${className}`}>
+    <div className={`bg-white border-2 border-black rounded-2xl p-6 shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] ${className}`}>
       {children}
     </div>
   );
@@ -103,15 +103,16 @@ function CustomBarTooltip({ active, payload }) {
 }
 
 function ScoreGauge({ score, isPassed }) {
-  const color = isPassed ? '#10b981' : '#ef4444';
+  const color = '#000000';
+  const accent = isPassed ? '#10b981' : '#ef4444';
   const data = [{ value: score }];
   return (
-    <div className="relative w-40 h-40 mx-auto">
+    <div className="relative w-44 h-44 mx-auto">
       <ResponsiveContainer width="100%" height="100%">
         <RadialBarChart
           cx="50%"
           cy="50%"
-          innerRadius="70%"
+          innerRadius="80%"
           outerRadius="100%"
           data={data}
           startAngle={225}
@@ -120,18 +121,18 @@ function ScoreGauge({ score, isPassed }) {
           <RadialBar
             background={{ fill: '#f1f5f9' }}
             dataKey="value"
-            cornerRadius={10}
+            cornerRadius={0}
             fill={color}
           />
         </RadialBarChart>
       </ResponsiveContainer>
       <div className="absolute inset-0 flex flex-col items-center justify-center">
-        <span className="text-3xl font-display font-bold text-slate-900 leading-none">
-          {score.toFixed(1)}%
+        <span className="text-4xl font-mono font-bold text-black leading-none tracking-tighter">
+          {score.toFixed(2)}%
         </span>
-        <span className="text-[9px] font-black uppercase tracking-widest text-slate-400 mt-1">
-          trust index
-        </span>
+        <div className="mt-2 px-2 py-0.5 bg-black text-white text-[8px] font-black uppercase tracking-widest font-mono">
+          PRECISION_INDEX
+        </div>
       </div>
     </div>
   );
@@ -158,7 +159,7 @@ function ModulePie({ modules }) {
         <Tooltip formatter={(v) => [`${v}%`, 'Veracity']} />
         <Legend
           iconType="circle"
-          formatter={(v) => <span className="text-[10px] font-bold text-slate-500 uppercase tracking-tight">{v}</span>}
+          formatter={(v) => <span className="text-[12px] font-black text-black uppercase tracking-tight font-mono">{v}</span>}
         />
       </PieChart>
     </ResponsiveContainer>
@@ -209,6 +210,45 @@ function RecItem({ icon: Icon, iconColor, iconBg, title, desc }) {
       <div>
         <p className="text-sm font-bold text-slate-900 mb-0.5">{title}</p>
         <p className="text-xs text-slate-500 font-medium leading-relaxed">{desc}</p>
+      </div>
+    </div>
+  );
+}
+
+function ModuleInsightRow({ module }) {
+  const c = scoreColor(module.score);
+  return (
+    <div className="flex items-center gap-12 p-6 hover:bg-black hover:text-white transition-all border-b border-black/10 last:border-0 group">
+      {/* Module Identity */}
+      <div className="flex items-center gap-6 w-1/3 min-w-[250px]">
+         <div className="text-sm font-mono font-black text-black group-hover:text-white border-2 border-black group-hover:border-white px-2 py-1 uppercase tracking-tighter">
+            {module.key.substring(0, 3)}
+         </div>
+         <div className="overflow-hidden">
+            <p className="text-sm font-black uppercase tracking-widest text-black group-hover:text-white transition-colors truncate font-mono">{module.label}</p>
+            <p className="text-[10px] text-black/40 group-hover:text-white/40 font-mono mt-1">
+               NODE_HASH: 0x{module.key.length}C{Math.round(module.score)}
+            </p>
+         </div>
+      </div>
+
+      {/* Accuracy Gauge */}
+      <div className="flex-1 flex items-center gap-6">
+        <div className="flex-1 h-3 bg-slate-100 group-hover:bg-white/10 border border-black group-hover:border-white/20 overflow-hidden relative">
+          <div 
+            className="h-full bg-black group-hover:bg-white transition-all duration-1000" 
+            style={{ width: `${module.score}%` }} 
+          />
+          <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+             <div className="w-full h-full opacity-10" style={{ background: `repeating-linear-gradient(90deg, transparent, transparent 9px, black 10px)` }}></div>
+          </div>
+        </div>
+        <div className="flex flex-col items-end min-w-[100px]">
+           <span className="text-2xl font-black font-mono leading-none tracking-tighter text-black group-hover:text-white">
+              {module.score.toFixed(2)}%
+           </span>
+           <span className="text-[10px] font-black text-black/40 group-hover:text-white/40 uppercase tracking-widest mt-1">ACCURACY</span>
+        </div>
       </div>
     </div>
   );
@@ -281,50 +321,50 @@ const ValidationReportModal = ({ isOpen, onClose, reportData }) => {
     >
       <div className="space-y-8 py-4 font-sans">
         {/* ── HEADER SUMMARY ── */}
-        <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 border-b border-slate-100 pb-8">
-          <div className="space-y-2">
-            <div className="flex items-center space-x-3 text-brand-600">
-              <ShieldCheck size={18} strokeWidth={2.5} />
-              <span className="text-[10px] font-black uppercase tracking-[0.2em]">Asset Verification Audit</span>
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 border-b-4 border-black pb-8">
+          <div className="space-y-3">
+            <div className="flex items-center space-x-3 text-black">
+              <ShieldCheck size={24} strokeWidth={3} />
+              <span className="text-sm font-black uppercase tracking-[0.4em] font-mono">NEURAL_AUDIT_REPORT</span>
             </div>
-            <p className="text-slate-400 text-xs font-medium">
-              UID #{uidStr} &nbsp;·&nbsp; Audited {auditDate} &nbsp;·&nbsp; {modules.length} verification nodes active
+            <p className="text-black text-[12px] font-black uppercase tracking-widest font-mono">
+              UID: {uidStr} // DATE: {auditDate} // NODES: {modules.length}
             </p>
           </div>
-          <div className="flex gap-3">
-            <Badge variant={isPassed ? 'success' : 'danger'} className="px-4 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest border-0">
-              {isPassed ? 'DECAPass Verified' : 'Protocol Failed'}
-            </Badge>
+          <div className="flex gap-4">
+            <div className={`px-6 py-2 border-2 border-black text-[10px] font-black uppercase tracking-[0.2em] font-mono ${isPassed ? 'bg-emerald-500 text-white' : 'bg-rose-500 text-white'}`}>
+              {isPassed ? 'VERIFIED' : 'CRITICAL_FAILURE'}
+            </div>
             <button
-              className="px-4 py-2 bg-slate-900 text-white rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-slate-800 transition-all flex items-center gap-2"
+              className="px-6 py-2 bg-black text-white border-2 border-black text-[10px] font-black uppercase tracking-[0.2em] font-mono hover:bg-white hover:text-black transition-all flex items-center gap-2"
               onClick={() => alert('Secure report export initialized.')}
             >
-              <Download size={14} /> Export
+              <Download size={14} /> EXPORT_DATA
             </button>
           </div>
         </div>
 
         {/* ── VERDICT BANNER ── */}
-        <div className={`p-6 rounded-[2rem] border flex items-start gap-4 transition-all ${isPassed ? 'bg-emerald-50 border-emerald-100' : 'bg-rose-50 border-rose-100'}`}>
-          <div className={`w-10 h-10 rounded-2xl flex items-center justify-center shrink-0 ${isPassed ? 'bg-emerald-500 text-white shadow-lg shadow-emerald-500/20' : 'bg-rose-500 text-white shadow-lg shadow-rose-500/20'}`}>
-            {isPassed ? <CheckCircle2 size={20} /> : <AlertTriangle size={20} />}
+        <div className={`p-8 border-2 border-black flex items-start gap-6 transition-all bg-white shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]`}>
+          <div className={`w-12 h-12 flex items-center justify-center shrink-0 border-2 border-black ${isPassed ? 'bg-black text-white' : 'bg-black text-white'}`}>
+            {isPassed ? <CheckCircle2 size={24} /> : <AlertTriangle size={24} />}
           </div>
-          <div className="space-y-1">
-            <p className={`text-sm font-bold uppercase tracking-tight ${isPassed ? 'text-emerald-900' : 'text-rose-900'}`}>
-              {isPassed ? 'Integrity Profile: High Fidelity' : 'Integrity Profile: Critical Warning'}
+          <div className="space-y-2">
+            <p className={`text-lg font-black uppercase tracking-widest font-mono text-black`}>
+              INTEGRITY_PROFILE: {isPassed ? 'HIGH_FIDELITY' : 'CRITICAL_WARNING'}
             </p>
-            <p className={`text-xs font-medium leading-relaxed ${isPassed ? 'text-emerald-700' : 'text-rose-700'}`}>
+            <p className={`text-sm font-bold leading-relaxed font-mono text-black`}>
               {isPassed 
-                ? 'Neural verification complete. No significant statistical drift or poisoning detected in the intelligence vectors.' 
-                : 'Protocol violation detected. High risk of corrupted or synthesized features. Manual intervention required.'}
+                ? 'DECAPASS PROTOCOL: Neural verification complete. Zero significant statistical drift detected. Intelligence vectors optimized.' 
+                : 'SECURITY PROTOCOL: Violation detected. High risk of corrupted features. Manual node intervention mandatory.'}
             </p>
           </div>
         </div>
 
         {/* ── DASHBOARD GRID ── */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           {/* Trust Gauge */}
-          <Card className="flex flex-col items-center justify-center space-y-6">
+          <Card className="lg:col-span-1 flex flex-col items-center justify-center space-y-6">
             <SectionTitle>Overall Trust Score</SectionTitle>
             <ScoreGauge score={score} isPassed={isPassed} />
             <div className="grid grid-cols-2 gap-4 w-full">
@@ -339,75 +379,52 @@ const ValidationReportModal = ({ isOpen, onClose, reportData }) => {
             </div>
           </Card>
 
-          {/* Breakdown Chart */}
-          <Card>
-            <SectionTitle icon={Activity}>Veracity Breakdown</SectionTitle>
-            <ModuleBarChart modules={modules} />
-          </Card>
-        </div>
-
-        {/* ── STATS & PROGRESS ── */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-          <div className="space-y-4">
-            <div className="grid grid-cols-2 gap-4">
-              <StatTile label="Data Quality" value={isPassed ? 'Optimal' : 'Low'} accent={isPassed ? '#10b981' : '#ef4444'} />
-              <StatTile label="Consensus" value="100%" />
+          {/* Vector Distribution */}
+          <Card className="lg:col-span-2">
+            <SectionTitle icon={PieChart}>Vector Distribution Matrix</SectionTitle>
+            <div className="flex items-center justify-center h-full -mt-4">
+              <ModulePie modules={modules} />
             </div>
-            <Card>
-              <SectionTitle icon={Zap}>Module Precision</SectionTitle>
-              {modules.map((m) => (
-                <ProgressRow key={m.key} label={m.label} score={m.score} />
-              ))}
-            </Card>
-          </div>
-
-          <Card>
-            <SectionTitle icon={PieChart}>Vector Distribution</SectionTitle>
-            <ModulePie modules={modules} />
           </Card>
         </div>
 
-        {/* ── MODULE CARDS ── */}
-        <div className="space-y-4">
-          <SectionTitle icon={Boxes}>Neural Inspection Logs</SectionTitle>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {modules.map((m) => {
-              const c = scoreColor(m.score);
-              return (
-                <Card key={m.key} className="group hover:border-brand-500/30 transition-all">
-                  <div className="flex justify-between items-start mb-4">
-                    <span className="text-[10px] font-black uppercase tracking-widest text-slate-400 group-hover:text-brand-500 transition-colors">{m.label}</span>
-                    <span className="text-sm font-black font-display" style={{ color: c.text }}>{Math.round(m.score)}%</span>
-                  </div>
-                  <div className="h-1 w-full bg-slate-50 rounded-full mb-4 overflow-hidden">
-                    <div className="h-full rounded-full" style={{ width: `${m.score}%`, background: c.bar }} />
-                  </div>
-                  <div className="flex gap-2 p-3 bg-slate-50 rounded-xl border border-slate-100 group-hover:bg-white transition-colors">
-                    <Terminal size={12} className="text-slate-300 mt-0.5 shrink-0" />
-                    <p className="text-[11px] font-medium text-slate-500 leading-relaxed italic line-clamp-2">"{m.summary}"</p>
-                  </div>
-                </Card>
-              );
-            })}
+        {/* ── CONSOLIDATED INTELLIGENCE MATRIX ── */}
+        <div className="space-y-6">
+          <SectionTitle icon={Activity}>Component Accuracy Matrix</SectionTitle>
+          <div className="border-2 border-black bg-white overflow-hidden shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]">
+            <div className="bg-black px-8 py-4 flex items-center gap-12 text-[12px] font-black uppercase tracking-[0.3em] text-white font-mono">
+              <span className="w-1/3 min-w-[250px]">Component_Node</span>
+              <span className="flex-1">Accuracy_Index (δ)</span>
+            </div>
+            <div className="">
+              {modules.map((m) => (
+                <ModuleInsightRow key={m.key} module={m} />
+              ))}
+            </div>
           </div>
         </div>
 
-        {/* ── RECOMMENDATIONS ── */}
-        <Card className="bg-slate-50 border-slate-200">
-          <SectionTitle icon={AlertTriangle}>AI Recommendations</SectionTitle>
-          <div className="space-y-2">
-            {recommendations.map((r, i) => (
-              <RecItem
-                key={i}
-                icon={r.icon}
-                iconColor={r.iconColor}
-                iconBg={r.iconBg}
-                title={r.title}
-                desc={r.desc}
-              />
-            ))}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-10">
+          <div className="space-y-6">
+            <SectionTitle icon={Zap}>System Metrics</SectionTitle>
+            <div className="grid grid-cols-1 gap-6">
+              <StatTile label="Data Quality" value={isPassed ? 'OPTIMAL' : 'LOW_RES'} accent={isPassed ? '#10b981' : '#ef4444'} />
+            </div>
           </div>
-        </Card>
+
+          <div className="space-y-6">
+            <SectionTitle icon={AlertTriangle}>Protocol Directives</SectionTitle>
+            <div className="border-2 border-black bg-black p-4 space-y-4 shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]">
+              {recommendations.map((r, i) => (
+                <div key={i} className="flex gap-4 items-center">
+                  <div className="w-2 h-2 bg-white rounded-full shrink-0 animate-pulse" />
+                  <p className="text-xs font-black uppercase text-white font-mono tracking-widest">{r.title}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+
 
         {/* ── RAW TRACE ── */}
         <div className="pt-4">
@@ -431,22 +448,22 @@ const ValidationReportModal = ({ isOpen, onClose, reportData }) => {
         </div>
 
         {/* ── FOOTER ACTIONS ── */}
-        <div className="flex flex-col sm:flex-row justify-between items-center gap-4 pt-6 border-t border-slate-100">
-          <p className="text-[10px] font-bold text-slate-300 uppercase tracking-widest flex items-center gap-2">
-            <Lock size={12} /> Neural Veracity Hub v3.11 · Cryptographic Sync Active
+        <div className="flex flex-col sm:flex-row justify-between items-center gap-6 pt-10 border-t-4 border-black">
+          <p className="text-[10px] font-black text-black uppercase tracking-[0.3em] flex items-center gap-3 font-mono">
+            <Lock size={14} strokeWidth={3} /> SYSTEM_READY // CRYPTO_SECURE
           </p>
-          <div className="flex gap-3 w-full sm:w-auto">
+          <div className="flex gap-4 w-full sm:w-auto">
             <button
-              className="flex-1 sm:flex-none px-6 py-3 bg-white border border-slate-200 text-slate-600 rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-slate-50 transition-all flex items-center justify-center gap-2"
+              className="flex-1 sm:flex-none px-8 py-4 bg-white border-2 border-black text-black text-[10px] font-black uppercase tracking-[0.2em] font-mono hover:bg-black hover:text-white transition-all shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]"
               onClick={() => setLogsOpen(true)}
             >
-              <Terminal size={14} /> Trace Logs
+              TRACE_LOGS
             </button>
             <button
-              className="flex-1 sm:flex-none px-6 py-3 bg-brand-600 text-white rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-brand-700 transition-all shadow-lg shadow-brand-500/20 flex items-center justify-center gap-2"
+              className="flex-1 sm:flex-none px-8 py-4 bg-black text-white border-2 border-black text-[10px] font-black uppercase tracking-[0.2em] font-mono hover:bg-white hover:text-black transition-all shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]"
               onClick={onClose}
             >
-              Confirm & Close
+              TERMINATE_AUDIT
             </button>
           </div>
         </div>

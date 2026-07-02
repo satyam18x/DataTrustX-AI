@@ -19,7 +19,8 @@ import {
     Search,
     Upload,
     FileText,
-    UploadCloud
+    UploadCloud,
+    ShieldAlert
 } from 'lucide-react';
 import { AuthContext } from '../context/AuthContext';
 import marketplaceService from '../services/marketplace';
@@ -40,6 +41,12 @@ const DealsPage = () => {
     const [deliveryFile, setDeliveryFile] = useState(null);
     const [isDelivering, setIsDelivering] = useState(false);
     const [deliveryResult, setDeliveryResult] = useState(null);
+
+    // Dispute state
+    const [showDisputeModal, setShowDisputeModal] = useState(false);
+    const [disputeDealId, setDisputeDealId] = useState(null);
+    const [disputeReason, setDisputeReason] = useState('');
+    const [isRaisingDispute, setIsRaisingDispute] = useState(false);
 
     useEffect(() => {
         fetchDeals();
@@ -110,6 +117,28 @@ const DealsPage = () => {
         setDeliveryFile(null);
         setDeliveryResult(null);
         setShowDeliverModal(true);
+    };
+
+    const openDisputeModal = (dealId) => {
+        setDisputeDealId(dealId);
+        setDisputeReason('');
+        setShowDisputeModal(true);
+    };
+
+    const handleRaiseDispute = async () => {
+        if (!disputeReason.trim()) { toast.error('Please describe the reason for the dispute.'); return; }
+        setIsRaisingDispute(true);
+        const tid = toast.loading('Filing dispute with the arbitration protocol...');
+        try {
+            await marketplaceService.raiseDispute(disputeDealId, disputeReason);
+            toast.success('Dispute filed. An admin will review and resolve it.', { id: tid });
+            setShowDisputeModal(false);
+            fetchDeals();
+        } catch (err) {
+            toast.error(err.response?.data?.detail || 'Failed to raise dispute.', { id: tid });
+        } finally {
+            setIsRaisingDispute(false);
+        }
     };
 
     const viewReport = async (deal) => {
@@ -238,7 +267,7 @@ const DealsPage = () => {
                                                     
                                                     {/* Buyer Action Flow */}
                                                     {user?.role === 'buyer' && (
-                                                        <div className="flex gap-4">
+                                                        <div className="flex gap-2 flex-wrap justify-end">
                                                             {deal.payment_status === 'pending' && (
                                                                 <Button 
                                                                     variant="glow"
@@ -258,18 +287,52 @@ const DealsPage = () => {
                                                                     {deal.payment_status === 'escrowed' ? 'Download' : 'Locked'} {deal.payment_status === 'escrowed' ? <Download className="ml-2 w-4 h-4" /> : <Lock className="ml-2 w-4 h-4" />}
                                                                 </Button>
                                                             )}
+
+                                                            {/* Raise Dispute — buyer, after delivery, not yet disputed */}
+                                                            {deal.delivery_status === 'delivered' && deal.dispute_status !== 'open' && deal.dispute_status !== 'resolved' && (
+                                                                <button
+                                                                    onClick={() => openDisputeModal(deal.id)}
+                                                                    className="flex items-center gap-2 h-12 px-5 rounded-xl border border-red-200 bg-red-50 text-red-600 text-sm font-bold hover:bg-red-100 transition-all"
+                                                                >
+                                                                    <ShieldAlert className="w-4 h-4" /> Dispute
+                                                                </button>
+                                                            )}
+                                                            {deal.dispute_status === 'open' && (
+                                                                <span className="flex items-center gap-1 h-12 px-4 rounded-xl bg-amber-50 text-amber-600 text-[10px] font-black uppercase tracking-widest border border-amber-200">
+                                                                    <ShieldAlert className="w-3 h-3" /> Dispute Open
+                                                                </span>
+                                                            )}
                                                         </div>
                                                     )}
 
                                                     {/* Seller Action Flow */}
-                                                    {user?.role === 'seller' && deal.delivery_status !== 'delivered' && (
-                                                        <Button
-                                                            variant="glow"
-                                                            onClick={() => { setSelectedDeal(deal); setShowDeliveryModal(true); }}
-                                                            className="rounded-xl px-6 h-12 bg-brand-600 hover:bg-brand-700"
-                                                        >
-                                                            Deliver <UploadCloud className="ml-2 w-4 h-4" />
-                                                        </Button>
+                                                    {user?.role === 'seller' && (
+                                                        <div className="flex gap-2 flex-wrap justify-end">
+                                                            {deal.delivery_status !== 'delivered' && (
+                                                                <Button
+                                                                    variant="glow"
+                                                                    onClick={() => openDeliverModal(deal.id)}
+                                                                    className="rounded-xl px-6 h-12 bg-brand-600 hover:bg-brand-700"
+                                                                >
+                                                                    Deliver <UploadCloud className="ml-2 w-4 h-4" />
+                                                                </Button>
+                                                            )}
+
+                                                            {/* Raise Dispute — seller, after delivery, not yet disputed */}
+                                                            {deal.delivery_status === 'delivered' && deal.dispute_status !== 'open' && deal.dispute_status !== 'resolved' && (
+                                                                <button
+                                                                    onClick={() => openDisputeModal(deal.id)}
+                                                                    className="flex items-center gap-2 h-12 px-5 rounded-xl border border-red-200 bg-red-50 text-red-600 text-sm font-bold hover:bg-red-100 transition-all"
+                                                                >
+                                                                    <ShieldAlert className="w-4 h-4" /> Dispute
+                                                                </button>
+                                                            )}
+                                                            {deal.dispute_status === 'open' && (
+                                                                <span className="flex items-center gap-1 h-12 px-4 rounded-xl bg-amber-50 text-amber-600 text-[10px] font-black uppercase tracking-widest border border-amber-200">
+                                                                    <ShieldAlert className="w-3 h-3" /> Dispute Open
+                                                                </span>
+                                                            )}
+                                                        </div>
                                                     )}
                                                 </div>
                                             </div>
@@ -402,6 +465,70 @@ const DealsPage = () => {
                                         </button>
                                     </div>
                                 )}
+                            </div>
+                        </motion.div>
+                    </div>
+                )}
+            </AnimatePresence>
+
+            {/* ── RAISE DISPUTE MODAL ── */}
+            <AnimatePresence>
+                {showDisputeModal && (
+                    <div className="fixed inset-0 z-50 flex items-center justify-center p-6">
+                        <motion.div
+                            initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+                            className="absolute inset-0 bg-slate-900/50 backdrop-blur-sm"
+                            onClick={() => !isRaisingDispute && setShowDisputeModal(false)}
+                        />
+                        <motion.div
+                            initial={{ opacity: 0, scale: 0.95, y: 20 }}
+                            animate={{ opacity: 1, scale: 1, y: 0 }}
+                            exit={{ opacity: 0, scale: 0.95, y: 20 }}
+                            className="relative w-full max-w-xl bg-white rounded-[3rem] shadow-2xl border border-slate-100 overflow-hidden"
+                        >
+                            <div className="p-10 space-y-8">
+                                <div className="space-y-3">
+                                    <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-red-50 text-red-600 text-[10px] font-black uppercase tracking-widest">
+                                        <ShieldAlert size={12} /> Conflict Arbitration Protocol
+                                    </div>
+                                    <h2 className="text-3xl font-display font-bold tracking-tightest text-slate-900">Raise Dispute</h2>
+                                    <p className="text-slate-500 font-medium text-sm">Describe the issue clearly. An admin will review and resolve the dispute, releasing or refunding the escrow accordingly.</p>
+                                </div>
+
+                                <div className="space-y-3">
+                                    <label className="text-[11px] font-black uppercase tracking-widest text-slate-400">Dispute Reason</label>
+                                    <textarea
+                                        rows={5}
+                                        placeholder="e.g. The delivered dataset is missing 40% of the promised records and contains corrupt entries..."
+                                        value={disputeReason}
+                                        onChange={e => setDisputeReason(e.target.value)}
+                                        disabled={isRaisingDispute}
+                                        className="w-full p-6 rounded-2xl bg-slate-50 border border-slate-200 focus:border-red-400 focus:ring-4 focus:ring-red-400/10 outline-none font-medium text-[15px] resize-none transition-all"
+                                    />
+                                </div>
+
+                                <div className="flex gap-4">
+                                    <button
+                                        type="button"
+                                        onClick={() => setShowDisputeModal(false)}
+                                        disabled={isRaisingDispute}
+                                        className="flex-1 h-14 rounded-2xl border border-slate-200 font-bold text-slate-600 hover:bg-slate-50 transition-all disabled:opacity-50"
+                                    >
+                                        Cancel
+                                    </button>
+                                    <button
+                                        type="button"
+                                        onClick={handleRaiseDispute}
+                                        disabled={!disputeReason.trim() || isRaisingDispute}
+                                        className="flex-[2] h-14 rounded-2xl bg-red-600 hover:bg-red-700 text-white font-bold transition-all flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+                                    >
+                                        {isRaisingDispute ? (
+                                            <><span className="animate-spin">⟳</span> Filing...</>
+                                        ) : (
+                                            <><ShieldAlert size={16} /> File Dispute</>
+                                        )}
+                                    </button>
+                                </div>
                             </div>
                         </motion.div>
                     </div>

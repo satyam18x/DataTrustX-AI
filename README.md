@@ -4,6 +4,11 @@ DataTrustX is a sophisticated, end-to-end marketplace designed for the secure ex
 
 ---
 
+### 🌐 Live Demo
+**Frontend:** https://datatrusx-ai.vercel.app/  
+**Backend API:** https://datatrustx-ai-y6ze.onrender.com  
+**API Documentation:** https://datatrustx-ai-y6ze.onrender.com/docs
+
 ## 🚀 Key Features
 
 ### 🛡️ Autonomous Veracity Validation
